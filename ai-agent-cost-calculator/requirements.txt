@@ -1,0 +1,4 @@
+# Core calculator (cost.py, test_cost.py) needs nothing beyond the stdlib.
+# These are only for the charts and the notebook:
+matplotlib>=3.7
+jupyter>=1.0
