@@ -1,4 +1,7 @@
 # Core calculator (cost.py, test_cost.py) needs nothing beyond the stdlib.
-# These are only for the charts and the notebook:
+# Agent, charts, and notebook extras:
+pypdf>=4.0
+fpdf2>=2.7
+boto3>=1.34          # optional — only for --backend bedrock
 matplotlib>=3.7
 jupyter>=1.0

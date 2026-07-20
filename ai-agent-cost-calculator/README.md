@@ -1,9 +1,40 @@
 # AI Agent Cost Calculator
 
-A tiny, self-contained example of how to calculate the **per-request AWS cost**
+Built a unit-economics model for a multi-step AI agent pipeline (document extraction → LLM translation → storage), with per-service cost breakdown, model comparison, and margin analysis.
+
+This is a tiny, self-contained example of how to calculate the **per-request AWS cost**
 of an AI agent workload — here, a PDF translation pipeline.
 
-No AWS account, no deployment, no dependencies. Just Python and arithmetic.
+The repo has two halves:
+
+1. **`cost.py`** — price the pipeline (no AWS account needed)
+2. **`agent.py`** — run the pipeline: extract text → translate → save PDF
+
+## Quick start (agent demo)
+
+```bash
+pip install -r requirements.txt
+
+# Offline demo — no API keys, uses a mock translator
+python agent.py --demo --backend mock
+
+# With cost estimate for the run you just did
+python agent.py --demo --backend mock --estimate-cost
+
+# Real translation (pick one backend)
+python agent.py input.pdf --backend bedrock --target-lang Spanish
+python agent.py input.pdf --backend ollama --target-lang Spanish
+python agent.py input.pdf --backend auto    # bedrock → ollama → mock
+```
+
+The agent writes `<input>_translated.pdf` (or use `-o out.pdf`).
+
+| Backend | Needs |
+|---|---|
+| `mock` | nothing — prefixes text with `[SPANISH demo translation]` |
+| `ollama` | [Ollama](https://ollama.com) running locally (`ollama serve`) |
+| `bedrock` | AWS credentials + Bedrock model access |
+| `auto` | tries bedrock, then ollama, then mock |
 
 ## The idea
 
@@ -93,5 +124,7 @@ charts.model_comparison(cost.compare_models(req)).savefig("models.png", dpi=150)
 ## Tests
 
 ```bash
-python test_cost.py        # or: python -m pytest
+python test_cost.py        # cost calculator
+python test_agent.py       # PDF agent (mock backend)
+python -m pytest           # both, if pytest is installed
 ```
