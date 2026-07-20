@@ -80,3 +80,41 @@ def model_comparison(rows: list[dict]):
     plt.setp(ax.get_xticklabels(), rotation=20, ha="right")
     fig.tight_layout()
     return fig
+
+
+def main():
+    import argparse
+    from pathlib import Path
+
+    import cost
+
+    parser = argparse.ArgumentParser(description="Render cost model charts.")
+    parser.add_argument(
+        "--save",
+        metavar="DIR",
+        help="Save PNGs to DIR instead of opening a window.",
+    )
+    args = parser.parse_args()
+
+    req = cost.Request(pages=3, input_tokens=4000, output_tokens=4000)
+    costs = cost.calculate_cost(req)
+    rows = cost.compare_models(req)
+
+    figures = [
+        ("breakdown", cost_breakdown(costs)),
+        ("monthly", monthly_projection(costs)),
+        ("models", model_comparison(rows)),
+    ]
+
+    if args.save:
+        out = Path(args.save)
+        out.mkdir(parents=True, exist_ok=True)
+        for name, fig in figures:
+            fig.savefig(out / f"{name}.png", dpi=150)
+        print(f"Saved {len(figures)} charts to {out}/")
+    else:
+        plt.show()
+
+
+if __name__ == "__main__":
+    main()
